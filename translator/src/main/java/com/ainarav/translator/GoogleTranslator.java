@@ -1,12 +1,10 @@
 package com.ainarav.translator;
 
-import static java.net.URLEncoder.encode;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLConnection;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -14,33 +12,33 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 /**
- * Google API-based translator
+ * Google API-based {@link Translator}
+ *
+ * @author ainar
+ *
  */
 public class GoogleTranslator extends AbstractTranslator {
 
+	private static final String API_NAME = "Google Translate";
 	private static final String URL = "https://www.googleapis.com/language/translate/v2/";
 	private static final String KEY = "AIzaSyDH-0lb3TIHBPss6zZwFLrw6vzdzN9MkXo";
 
 	@Override
-	protected String getUrl() {
-		return URL;
-	}
-
-	@Override
-	protected String buildQuery(String text, String sourceLang, String targetLang) throws UnsupportedEncodingException {
-		StringBuilder sb = new StringBuilder();
-		sb.append("key=").append(encode(KEY, CHARSET));
-		sb.append("&q=").append(encode(text, CHARSET));
-		sb.append("&target=").append(encode(targetLang, CHARSET));
+	protected Map<String, String> buildParamsMap(String text, String sourceLang, String targetLang) {
+		Map<String, String> paramsMap = new HashMap<>();
+		paramsMap.put("key", KEY);
+		paramsMap.put("q", text);
+		paramsMap.put("target", targetLang);
 		if (sourceLang != null && !"".equals(sourceLang.trim())) {
-			sb.append("&source=").append(encode(sourceLang, CHARSET));
+			paramsMap.put("source", sourceLang);
 		}
-		return sb.toString();
+		return paramsMap;
 	}
 
+
 	@Override
-	protected String readResponse(URLConnection connection) throws IOException {
-		try (InputStream response = connection.getInputStream(); JsonReader rdr = Json.createReader(response)) {
+	protected String readResponse(InputStream response) throws IOException {
+		try (JsonReader rdr = Json.createReader(response)) {
 			JsonObject obj = rdr.readObject();
 			JsonObject data = obj.getJsonObject("data");
 			JsonArray translationArray = data.getJsonArray("translations");
@@ -50,6 +48,16 @@ public class GoogleTranslator extends AbstractTranslator {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	protected String getAPIName() {
+		return API_NAME;
+	}
+
+	@Override
+	protected String getUrl() {
+		return URL;
 	}
 
 }

@@ -1,8 +1,8 @@
 package com.ainarav.translator;
 
 /**
- * Interface for translating a text string
- * 
+ * Interface for translating a text string from one language to another
+ *
  * @author ainar
  *
  */
@@ -21,6 +21,7 @@ public interface Translator {
 	 *            A string Required. representing the language code to translate the
 	 *            text into.
 	 * @return A string representing the translated text.
+	 *
 	 */
 	String translate(String text, String sourceLang, String targetLang);
 
