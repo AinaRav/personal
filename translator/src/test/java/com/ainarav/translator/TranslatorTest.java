@@ -1,6 +1,6 @@
 package com.ainarav.translator;
 
-import static com.ainarav.translator.TranslatorHelper.MAX_TEXT_LENGTH;
+import static com.ainarav.translator.util.TranslatorHelper.MAX_TEXT_LENGTH;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -8,6 +8,10 @@ import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.ainarav.translator.exception.TranslationException;
+import com.ainarav.translator.impl.GoogleTranslator;
+import com.ainarav.translator.impl.MSTranslator;
 
 /**
  * {@link Translator} test skeleton
@@ -28,6 +32,7 @@ public class TranslatorTest {
 	public void setUpTranslators() {
 		translators = new ArrayList<>();
 		translators.add(new GoogleTranslator());
+		translators.add(new MSTranslator());
 	}
 
 	@Test
@@ -37,12 +42,12 @@ public class TranslatorTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testNoTextThrowsIllegalArgumentException() {
+	public void testTranslateWithoutTextThrowsIllegalArgumentException() {
 		translators.forEach(translator -> translator.translate(null, SOURCE_LANG, TARGET_LANG));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testTextExceedsMaxLengthThrowsIllegalArgumentException() {
+	public void testTranslateWithTextExceedingMaxLengthThrowsIllegalArgumentException() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < MAX_TEXT_LENGTH + 1; i++) {
 			sb.append("a");
@@ -51,18 +56,18 @@ public class TranslatorTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testNoTargetLangThrowsIllegalArgumentException() {
+	public void testTranslateWithoutTargetLangThrowsIllegalArgumentException() {
 		translators.forEach(translator -> translator.translate(TEXT_TO_TRANSLATE, SOURCE_LANG, null));
 	}
 
 	@Test
-	public void testNoSourceLangEndsOK() {
+	public void testTranslateWithoutSourceLangEndsOK() {
 		translators.forEach(translator -> assertEquals(TRANSLATED_TEXT,
 				translator.translate(TEXT_TO_TRANSLATE, null, TARGET_LANG)));
 	}
 
 	@Test(expected = TranslationException.class)
-	public void testUnknownLangThrowsTranslationException() {
+	public void testTranslateWithUnknownLangThrowsTranslationException() {
 		translators.forEach(translator -> translator.translate(TEXT_TO_TRANSLATE, SOURCE_LANG, "toto"));
 	}
 

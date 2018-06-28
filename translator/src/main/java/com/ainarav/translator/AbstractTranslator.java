@@ -1,15 +1,18 @@
 package com.ainarav.translator;
 
-import static com.ainarav.translator.TranslatorHelper.CHARSET;
-import static com.ainarav.translator.TranslatorHelper.buildParamsString;
-import static com.ainarav.translator.TranslatorHelper.checkArgs;
+import static com.ainarav.translator.util.TranslatorHelper.CHARSET;
+import static com.ainarav.translator.util.TranslatorHelper.checkArgs;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
+import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
-import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
+import com.ainarav.translator.exception.TranslationException;
 
 /**
  * {@link Translator} skeleton
@@ -17,39 +20,36 @@ import java.util.Map;
  * @author ainar
  */
 public abstract class AbstractTranslator implements Translator {
-
+	
 	@Override
 	public String translate(String text, String sourceLang, String targetLang) {
 		checkArgs(text, targetLang);
 		try {
-			URLConnection connection = initConnection();
-			Map<String, String> paramsMap = buildParamsMap(text, sourceLang, targetLang);
-			String paramString = buildParamsString(paramsMap);
-			try (OutputStream output = connection.getOutputStream()) {
-				output.write(paramString.getBytes(CHARSET));
-			}
+			URLConnection connection = initConnection(text, sourceLang, targetLang);
 			try (InputStream response = connection.getInputStream()) {
 				return readResponse(response);
+			} catch (ParserConfigurationException | SAXException e) {
+				throw new TranslationException(getApiName(), e);
 			}
 		} catch (IOException e) {
-			throw new TranslationException(getAPIName(), e);
+			throw new TranslationException(getApiName(), e);
 		}
 	}
-
-	protected URLConnection initConnection() throws IOException {
-		URLConnection connection = new URL(getUrl()).openConnection();
-		connection.setDoOutput(true);
+	
+	protected void setRequestProperties(URLConnection connection) {
 		connection.setRequestProperty("Accept-Charset", CHARSET);
 		connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + CHARSET);
-		return connection;
 	}
 
-	protected abstract Map<String, String> buildParamsMap(String text, String sourceLang, String targetLang);
+	protected abstract URLConnection initConnection(String text, String sourceLang, String targetLang) throws IOException;
 
-	protected abstract String readResponse(InputStream response) throws IOException;
+	protected abstract String buildParamsString(String text, String sourceLang, String targetLang) throws UnsupportedEncodingException;
 
-	protected abstract String getAPIName();
+	protected abstract String readResponse(InputStream response)
+			throws IOException, ParserConfigurationException, SAXException;
 
-	protected abstract String getUrl();
+	protected abstract String getApiName();
+
+	protected abstract String getApiUrl();
 
 }

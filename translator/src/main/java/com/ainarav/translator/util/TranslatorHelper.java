@@ -1,11 +1,9 @@
-package com.ainarav.translator;
+package com.ainarav.translator.util;
 
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.ainarav.translator.Translator;
 
 /**
  * Helper class for {@link Translator}
@@ -14,7 +12,7 @@ import java.util.stream.Collectors;
  *
  */
 public final class TranslatorHelper {
-	
+
 	public static final String CHARSET = UTF_8.name();
 
 	public static final int MAX_TEXT_LENGTH = 10000;
@@ -43,23 +41,6 @@ public final class TranslatorHelper {
 		if (targetLang == null || "".equals(targetLang.trim())) {
 			throw new IllegalArgumentException("targetLang is mandatory");
 		}
-	}
-
-	/**
-	 * Builds a form url params String from a map of parameters
-	 * 
-	 * @param paramsMap
-	 *            map of parameters
-	 * @return a form url String
-	 */
-	public static String buildParamsString(Map<String, String> paramsMap) {
-		return paramsMap.entrySet().stream().map(entry -> {
-			try {
-				return entry.getKey() + "=" + java.net.URLEncoder.encode(entry.getValue(), CHARSET);
-			} catch (UnsupportedEncodingException e) {
-				throw new IllegalArgumentException(e);
-			}
-		}).collect(Collectors.joining("&"));
 	}
 
 }

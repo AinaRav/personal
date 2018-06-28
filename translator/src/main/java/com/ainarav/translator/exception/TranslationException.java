@@ -1,8 +1,6 @@
-package com.ainarav.translator;
+package com.ainarav.translator.exception;
 
 import static java.lang.String.format;
-
-import java.io.IOException;
 
 /**
  * Unrecoverable exception thrown when translating.
@@ -25,7 +23,7 @@ public class TranslationException extends RuntimeException {
 	 * @param e
 	 *            underlying exception
 	 */
-	public TranslationException(String apiName, IOException e) {
+	public TranslationException(String apiName, Exception e) {
 		super(format("Error when translating text using %s API", apiName), e);
 	}
 
