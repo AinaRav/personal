@@ -1,6 +1,5 @@
 package com.ainarav.translator.impl;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
@@ -10,7 +9,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-import com.ainarav.translator.AbstractPostMethodTranslator;
+import com.ainarav.translator.RequestMethod;
 import com.ainarav.translator.Translator;
 import com.ainarav.translator.util.ParamsStringBuilder;
 
@@ -20,11 +19,12 @@ import com.ainarav.translator.util.ParamsStringBuilder;
  * @author ainar
  *
  */
-public class GoogleTranslator extends AbstractPostMethodTranslator {
+public class GoogleTranslator extends AbstractTranslator {
 
 	private static final String API_NAME = "Google Translate";
 	private static final String API_URL = "https://www.googleapis.com/language/translate/v2/";
-	private static final String API_KEY = "AIzaSyDH-0lb3TIHBPss6zZwFLrw6vzdzN9MkXo";
+	private static final String API_KEY = "AIzaSyDIJ_5e47jqPt1DBj3QWHlJbS50wm67Lho";
+//	private static final String API_KEY = "AIzaSyDH-0lb3TIHBPss6zZwFLrw6vzdzN9MkXo";
 
 	@Override
 	protected String buildParamsString(String text, String sourceLang, String targetLang)
@@ -40,7 +40,7 @@ public class GoogleTranslator extends AbstractPostMethodTranslator {
 	}
 
 	@Override
-	protected String readResponse(InputStream response) throws IOException {
+	protected String readResponse(InputStream response) {
 		try (JsonReader rdr = Json.createReader(response)) {
 			JsonObject obj = rdr.readObject();
 			JsonObject data = obj.getJsonObject("data");
@@ -61,6 +61,11 @@ public class GoogleTranslator extends AbstractPostMethodTranslator {
 	@Override
 	protected String getApiUrl() {
 		return API_URL;
+	}
+
+	@Override
+	protected RequestMethod getRequestMethod() {
+		return RequestMethod.POST;
 	}
 
 }

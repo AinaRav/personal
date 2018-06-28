@@ -13,8 +13,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import com.ainarav.translator.AbstractGetMethodTranslator;
+import com.ainarav.translator.RequestMethod;
 import com.ainarav.translator.Translator;
+import com.ainarav.translator.exception.TranslationException;
 import com.ainarav.translator.util.ParamsStringBuilder;
 
 /**
@@ -24,7 +25,7 @@ import com.ainarav.translator.util.ParamsStringBuilder;
  * @author ainar
  *
  */
-public class MSTranslator extends AbstractGetMethodTranslator {
+public class MSTranslator extends AbstractTranslator {
 
 	private static final String API_NAME = "MS Translator";
 	private static final String API_URL = "https://api.microsofttranslator.com/V2/Http.svc/Translate";
@@ -49,15 +50,19 @@ public class MSTranslator extends AbstractGetMethodTranslator {
 	}
 
 	@Override
-	protected String readResponse(InputStream response) throws IOException, ParserConfigurationException, SAXException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(response);
-        Element element;
-		if ((element = document.getDocumentElement()) != null) {
-			return element.getTextContent();
+	protected String readResponse(InputStream response) throws TranslationException {
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.parse(response);
+			Element element;
+			if ((element = document.getDocumentElement()) != null) {
+				return element.getTextContent();
+			}
+			return null;
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			throw new TranslationException(getApiName(), e);
 		}
-		return null;
 	}
 
 	@Override
@@ -68,6 +73,11 @@ public class MSTranslator extends AbstractGetMethodTranslator {
 	@Override
 	protected String getApiUrl() {
 		return API_URL;
+	}
+
+	@Override
+	protected RequestMethod getRequestMethod() {
+		return RequestMethod.GET;
 	}
 
 }

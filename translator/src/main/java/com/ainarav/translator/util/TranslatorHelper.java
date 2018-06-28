@@ -13,8 +13,14 @@ import com.ainarav.translator.Translator;
  */
 public final class TranslatorHelper {
 
+	/**
+	 * The default CHARSET
+	 */
 	public static final String CHARSET = UTF_8.name();
 
+	/**
+	 * The maximum text length
+	 */
 	public static final int MAX_TEXT_LENGTH = 10000;
 
 	private TranslatorHelper() {

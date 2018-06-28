@@ -27,4 +27,11 @@ public class TranslationException extends RuntimeException {
 		super(format("Error when translating text using %s API", apiName), e);
 	}
 
+	/**
+	 * @param msg
+	 */
+	public TranslationException(String msg) {
+		super(msg);
+	}
+
 }
